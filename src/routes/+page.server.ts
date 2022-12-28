@@ -1,17 +1,29 @@
-import type { Actions } from '@sveltejs/kit';
-import { uploadToS3 } from '../aws/utils';
+import { PUBLIC_VIDEO_URL } from '$env/static/public';
+import { fail, type Actions } from '@sveltejs/kit';
 import uniqid from 'uniqid';
+import { writeFileSync } from 'fs';
 
 export const actions: Actions = {
 	default: async (event) => {
-		const data = await event.request.formData();
-		const video = data.get('video') as File;
-		const { name, size, type } = video;
-		const buf = await video.arrayBuffer();
-		// Todo, charge per GB
-		// from video/ext (i.e. video/mp4), grab ext
-		const extension = type.split('/')[1];
-		console.log({ name, size, video, type, extension });
-		uploadToS3(`${uniqid()}.${extension}`, Buffer.from(buf));
+		try {
+			const data = await event.request.formData();
+			const video = data.get('video') as File;
+			if (!video) {
+				return fail(400, { missing: true });
+			}
+			const { name, type, size } = video;
+			const extension = type.split('/')[1];
+			const base64 = Buffer.from(await video.arrayBuffer()).toString('base64');
+			console.log({ name, type, size, video, base64 });
+			// TODO change price on file size
+			const newName = `${uniqid()}.${extension}`;
+			writeFileSync(`static/v/${newName}`, base64, 'base64');
+			const url = `${PUBLIC_VIDEO_URL}/v/${newName}`;
+			return {
+				url
+			};
+		} catch (e) {
+			return fail(500, { error: String(e) });
+		}
 	}
 };
