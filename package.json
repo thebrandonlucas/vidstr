@@ -36,7 +36,7 @@
 		"vitest": "^0.25.3"
 	},
 	"engines": {
-		"node": "19.1.0"
+		"node": "19.3.0"
 	},
 	"type": "module",
 	"dependencies": {
