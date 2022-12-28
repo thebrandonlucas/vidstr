@@ -12,7 +12,6 @@ export const actions: Actions = {
 		// from video/ext (i.e. video/mp4), grab ext
 		const extension = type.split('/')[1];
 		console.log({ name, size, video, type, extension });
-
 		uploadToS3(`${uniqid()}.${extension}`, Buffer.from(buf));
 	}
 };
