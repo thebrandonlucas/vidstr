@@ -1,4 +1,4 @@
-import { PUBLIC_VIDEO_URL } from '$env/static/public';
+import { PUBLIC_BASE_URL } from '$env/static/public';
 import { fail, type Actions } from '@sveltejs/kit';
 import uniqid from 'uniqid';
 import { writeFileSync } from 'fs';
@@ -18,7 +18,7 @@ export const actions: Actions = {
 			// TODO change price on file size
 			const newName = `${uniqid()}.${extension}`;
 			writeFileSync(`static/v/${newName}`, base64, 'base64');
-			const url = `${PUBLIC_VIDEO_URL}/v/${newName}`;
+			const url = `${PUBLIC_BASE_URL}/v/${newName}`;
 			return {
 				url
 			};
